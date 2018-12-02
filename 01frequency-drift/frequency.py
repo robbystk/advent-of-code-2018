@@ -1,7 +1,7 @@
 import sys
 
 with open(sys.argv[1]) as f:
-    deltas = [int(line) for line in f.readlines()]
+    deltas = [int(line) for line in f]
 
 frequency = 0               # starting frequency
 frequency_set = set([0])    # a set to keep track of what frequencies we've seen
