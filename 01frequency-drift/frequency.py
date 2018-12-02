@@ -1,7 +1,7 @@
 import sys
 
 with open(sys.argv[1]) as f:
-    lines = f.readlines()
+    deltas = [int(line) for line in f.readlines()]
 
 frequency = 0               # starting frequency
 frequency_set = set([0])    # a set to keep track of what frequencies we've seen
@@ -10,8 +10,8 @@ repeated_frequency = None   # the first frequency we've seen twice
 final_frequency = None      # the frequency after the first pass through the input
 first_repetition = True     # whether we're on that first pass
 while not repeated:
-    for line in lines:
-        frequency += int(line)
+    for delta in deltas:
+        frequency += delta
         # check if we've seen this frequency before
         if frequency in frequency_set and not repeated:
             repeated_frequency = frequency
