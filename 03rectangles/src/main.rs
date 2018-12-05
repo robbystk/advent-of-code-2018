@@ -52,6 +52,17 @@ fn print_counts(c: &HashMap<(u32, u32), i32>) {
     }
 }
 
+fn no_overlap(r: &Rectangle, c: &HashMap<(u32, u32), i32>) -> bool {
+    for i in r.hoffset..r.hoffset+r.width {
+        for j in r.voffset..r.voffset+r.height {
+            if *c.get(&(i,j)).unwrap() > 1 {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
 
@@ -65,8 +76,12 @@ fn main() {
 
     let mut counts = HashMap::new();
 
-    for l in lines {
-        let r = Rectangle::from_str(&l.unwrap());
+    let rectangles: Vec<_> = lines
+        .into_iter()
+        .map(|l| {Rectangle::from_str(&l.unwrap())})
+        .collect();
+
+    for r in &rectangles {
         for i in r.hoffset..r.hoffset+r.width {
             for j in r.voffset..r.voffset+r.height {
                 let count = counts.entry((i,j)).or_insert(0);
@@ -86,5 +101,14 @@ fn main() {
         }
     }
 
-    println!("{}", square_inches_in_multiple_rectangles);
+    println!("{} square inches of fabric are part of multiple claims",
+             square_inches_in_multiple_rectangles);
+
+    // find non-overlapping claims
+    for r in &rectangles {
+        if no_overlap(&r, &counts) {
+            println!("Claim {} overlaps with no other claims.",
+                     r.number);
+        }
+    }
 }
