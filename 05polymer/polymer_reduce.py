@@ -5,10 +5,14 @@ with open(sys.argv[1]) as f:
     line = f.readline().strip()
 
 def reduce(string):
-    for i in range(len(string)-1):
+    length = len(string) - 1
+    i = 0
+    while i < length:
         if string[i] == string[i+1].swapcase():
             string = string[:i] + string[i+2:]
-            break
+            length -= 2
+        else:
+            i += 1
     return(string)
 
 def full_reduce(string):
