@@ -82,8 +82,9 @@ for g in sleep_frequency:
     guards.append(g)
     heatmap.append(sleep_frequency[g])
 
-plt.plot(np.array(heatmap).T)
-# plt.show()
+heatmap = np.array(heatmap)
+plt.imshow(heatmap)
+plt.show()
 
 most_sleep = 0
 sleepiest_guard = None
@@ -97,5 +98,13 @@ for g in sleep_frequency:
 sleepiest_minute = np.argmax(sleep_frequency[sleepiest_guard])
 
 print(f"sleepiest guard: {sleepiest_guard}")
-print(f"sleepiest minute: {sleepiest_minute}")
+print(f"sleepiest minute for guard #{sleepiest_guard}: {sleepiest_minute}")
 print(f"answer: {sleepiest_guard * sleepiest_minute}")
+
+most_frequently_asleep_combination = np.unravel_index(np.argmax(heatmap),
+        heatmap.shape)
+mfac_guard = guards[most_frequently_asleep_combination[0]]
+mfac_minute = most_frequently_asleep_combination[1]
+print(f"most-frequently asleep combo: guard #{mfac_guard}, minute #{mfac_minute}")
+
+print(f"answer No. 2: {mfac_guard * mfac_minute}")
