@@ -23,3 +23,22 @@ def full_reduce(string):
     return old
 
 print(len(full_reduce(line)))
+
+def remove_char(string, c):
+    i = 0
+    while i < len(string):
+        if string[i] == c or string[i].swapcase() == c:
+            string = string[:i] + string[i+1:]
+        else:
+            i += 1
+    return string
+
+
+min_reduction = len(line)
+for c in range(ord('a'),ord('z')):
+    reduced_length = len(full_reduce(remove_char(line, chr(c))))
+    if reduced_length < min_reduction:
+        min_reduction = reduced_length
+    print(chr(c))
+
+print(min_reduction)
