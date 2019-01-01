@@ -23,20 +23,32 @@ plt.scatter(points[:,0], points[:,1])
 x_center = int(points[:,0].mean())
 y_center = int(points[:,1].mean())
 
-path = np.array([[x_center],[y_center]])
-direction = np.array([[1,0]])
+direction = np.array([-1,1])
+increase_radius = np.array([1,0])
 rotator = np.array([[0,1],[-1,0]])
-step_limit = 1
+step_limit = 0
 step = 0
-for i in range(300):
-    path = np.append(path, (path[:,-1] + direction).T, axis=1)
+side = 0
+position = np.array([x_center,y_center])
+path = [position.flatten().tolist()]
+position += increase_radius
+path.append(position.flatten().tolist())
+for i in range(1,300):
+    position += direction
     step += 1
-    if step == step_limit:
-        step = 0
-        if direction[0,0] == 0:
-            step_limit += 1
+    if step > step_limit:
         direction = direction @ rotator
+        step = 0
+        side += 1
+        if side >= 4:
+            position += increase_radius
+            step_limit += 1
+            side = 0
+    path.append(position.flatten().tolist())
 
-plt.plot(path[0,:], path[1,:])
+path = np.array(path)
+# print(path - [x_center, y_center])
+
+plt.plot(path[:,0], path[:,1], '.-')
 plt.show()
 plt.close()
