@@ -49,20 +49,50 @@ def add_to_closest_point(pt):
     if closest is not None:
         areas[closest] += 1
 
+# the set of points we have not reached yet
+not_reached = set()
+for pt in point_array:
+    not_reached.add(tuple(pt))
+
+def remove_point(s, pt):
+    """Removes the point pt from the set s"""
+    s -= {tuple(pt)}
+
+def is_empty(s):
+    """check whether the set is the empty set"""
+    return s.issubset({})
+
+# Traverse out from the center of mass of the array in a diamond-shaped spiral
+# counterclockwise.  `direction` is the direction we're moving and is rotated by
+# the rotation matrix `rotator` after completing each side.  `increase_radius`
+# moves us to the next "ring".  `step_limit` is the number of points in the
+# current side, and `step` is how many we've done.
+
+# The strategy will be to go until we've reached all the points in the original
+# set (tracked by `not_reached` above) then finish a rotation.  We will save the
+# counts at that point, and to one more lap.  Any cells that grow during that
+# final lap are assumed to be infinite and removed.  The largest tnon-infinite
+# cell corresponds to the point we want.
+
 x_center = int(point_array[:,0].mean())
 y_center = int(point_array[:,1].mean())
 
+# constants
 direction = np.array([-1,1])
 increase_radius = np.array([1,0])
 rotator = np.array([[0,1],[-1,0]])
+# initial conditions
 step_limit = 0
 step = 0
 side = 0
+final_lap = False
 position = np.array([x_center,y_center])
+# take care of the first point
 add_to_closest_point(position)
+# move to the second point and take care of that as well
 position += increase_radius
 add_to_closest_point(position)
-for i in range(1,300):
+while True:
     position += direction
     step += 1
     if step > step_limit:
@@ -70,9 +100,20 @@ for i in range(1,300):
         step = 0
         side += 1
         if side >= 4:
+            # right corner
             position += increase_radius
             step_limit += 1
             side = 0
+            if final_lap:
+                break
+            if is_empty(not_reached):
+                final_lap = True
+                # save counts
+                penultimate_areas = areas.copy()
+    # remove the point since we've reached it
+    remove_point(not_reached, position)
+    # update areas
     add_to_closest_point(position)
 
+print(areas, penultimate_areas)
 print(areas.most_common(1)[0])
