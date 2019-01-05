@@ -115,5 +115,10 @@ while True:
     # update areas
     add_to_closest_point(position)
 
-print(areas, penultimate_areas)
-print(areas.most_common(1)[0])
+finite_areas = areas.copy()
+
+for i in areas:
+    if areas[i] > penultimate_areas[i]:
+        del finite_areas[i]
+
+print(finite_areas.most_common(1))
