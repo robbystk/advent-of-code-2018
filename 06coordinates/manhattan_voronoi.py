@@ -20,6 +20,9 @@ point_array = np.array(point_array)
 # how many points are closest to each point
 areas = Counter()
 
+safe_region = set()
+safe_region_size = Counter()
+
 plt.scatter(point_array[:,0], point_array[:,1])
 # plt.show()
 
@@ -43,6 +46,17 @@ def closest_point(pt):
     else:
         return closest_index
 
+def is_safe(pt):
+    threshold = 10000
+    return sum(distances(pt)) < threshold
+
+def add_point_if_safe(pt):
+    if is_safe(pt):
+        safe_region.add(tuple(pt))
+
+def update_safe_region(pt):
+    if is_safe(pt):
+        safe_region_size[0] += 1
 
 def add_to_closest_point(pt):
     closest = closest_point(pt)
@@ -61,6 +75,11 @@ def remove_point(s, pt):
 def is_empty(s):
     """check whether the set is the empty set"""
     return s.issubset({})
+
+def process_point(pt):
+    add_to_closest_point(pt)
+    add_point_if_safe(pt)
+    update_safe_region(pt)
 
 # Traverse out from the center of mass of the array in a diamond-shaped spiral
 # counterclockwise.  `direction` is the direction we're moving and is rotated by
@@ -86,13 +105,14 @@ step_limit = 0
 step = 0
 side = 0
 final_lap = False
+done = False
 position = np.array([x_center,y_center])
 # take care of the first point
-add_to_closest_point(position)
+process_point(position)
 # move to the second point and take care of that as well
 position += increase_radius
-add_to_closest_point(position)
-while True:
+process_point(position)
+while is_safe(position) or not done:
     position += direction
     step += 1
     if step > step_limit:
@@ -104,8 +124,9 @@ while True:
             position += increase_radius
             step_limit += 1
             side = 0
-            if final_lap:
-                break
+            if final_lap and not done:
+                final_areas = areas.copy()
+                done = True
             if is_empty(not_reached):
                 final_lap = True
                 # save counts
@@ -113,12 +134,20 @@ while True:
     # remove the point since we've reached it
     remove_point(not_reached, position)
     # update areas
-    add_to_closest_point(position)
+    process_point(position)
 
-finite_areas = areas.copy()
+finite_areas = final_areas.copy()
 
-for i in areas:
-    if areas[i] > penultimate_areas[i]:
+for i in final_areas:
+    if final_areas[i] > penultimate_areas[i]:
         del finite_areas[i]
 
 print(finite_areas.most_common(1))
+
+# print(safe_region)
+print(safe_region_size)
+
+# plot safe region
+x,y = list(zip(*safe_region))
+plt.plot(x,y, '.')
+plt.show()
