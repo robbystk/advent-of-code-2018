@@ -25,7 +25,7 @@ class Dependencies:
         if step in self.dependencies:
             return self.dependencies[step]
         else:
-            return set([])
+            return set()
 
     def __repr__(self):
         step_strings = []
@@ -44,7 +44,7 @@ def extract_dependency(string):
     step = string[36]
     return Dependency(step, dependency)
 
-def main():
+def get_steps_and_dependencies():
     dependencies = Dependencies()
     steps = set()
     with open(sys.argv[1]) as f:
@@ -54,9 +54,9 @@ def main():
             steps.add(dependency.dependency)
             dependencies.add_dep(dependency)
 
-    print(dependencies)
-    print(sorted(steps))
+    return steps, dependencies
 
+def determine_step_sequence(steps, dependencies):
     step_sequence = []
     while not is_empty(steps):
         for step in sorted(steps):
@@ -65,8 +65,16 @@ def main():
                 step_sequence.append(step)
                 steps.remove(step)
                 break
-        print(step_sequence)
-        print(steps)
+
+    return step_sequence
+
+def main():
+    steps, dependencies = get_steps_and_dependencies()
+
+    print(dependencies)
+    print(sorted(steps))
+
+    step_sequence = determine_step_sequence(steps, dependencies)
 
     print(''.join(step_sequence))
 
