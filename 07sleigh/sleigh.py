@@ -22,7 +22,10 @@ class Dependencies:
             self.dependencies[dependency.step] = set([dependency.dependency])
 
     def get_deps(self, step):
-        return self.dependencies[step]
+        if step in self.dependencies:
+            return self.dependencies[step]
+        else:
+            return set([])
 
     def __repr__(self):
         step_strings = []
@@ -30,6 +33,10 @@ class Dependencies:
             dependency_string = ', '.join(dep for dep in self.dependencies[item])
             step_strings.append(f"{item}: [{dependency_string}]")
         return ', '.join(step_strings)
+
+def is_empty(s):
+    """check whether the set is the empty set"""
+    return s.issubset({})
 
 def extract_dependency(string):
     """returns a Dependency object"""
@@ -48,9 +55,20 @@ def main():
             dependencies.add_dep(dependency)
 
     print(dependencies)
-    steps = list(steps)
-    steps.sort()
-    print(steps)
+    print(sorted(steps))
+
+    step_sequence = []
+    while not is_empty(steps):
+        for step in sorted(steps):
+            deps = dependencies.get_deps(step)
+            if is_empty(deps - set(step_sequence)):
+                step_sequence.append(step)
+                steps.remove(step)
+                break
+        print(step_sequence)
+        print(steps)
+
+    print(''.join(step_sequence))
 
 if __name__ == "__main__":
     main()
