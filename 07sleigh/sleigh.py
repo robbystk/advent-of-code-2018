@@ -69,7 +69,7 @@ def determine_step_sequence(steps, dependencies):
     return step_sequence
 
 def seconds_for(step):
-    offset = 0
+    offset = 60
     return ord(step) - 64 + offset
 
 class Worker:
@@ -108,7 +108,7 @@ class Coordinator:
         self.assign_work()
 
     def finish_step(self, step):
-        print(f"Finished step {step}")
+        # print(f"Finished step {step}")
         self.done.add(step)
 
     def assign_available_worker(self, step):
@@ -132,7 +132,7 @@ class Coordinator:
 
         self.assign_work()
         self.seconds += 1
-        print(self.seconds, self.workers, self.to_do, self.done)
+        # print(self.seconds, self.workers, self.to_do, self.done)
 
     def run(self):
         while(not self.done >= self.steps):
@@ -148,7 +148,7 @@ def main():
 
     print(''.join(step_sequence))
 
-    N_workers = 2
+    N_workers = 5
     workers = [Worker() for _ in range(N_workers)]
 
     coordinator = Coordinator(workers, steps, dependencies)
