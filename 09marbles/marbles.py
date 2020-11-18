@@ -1,21 +1,26 @@
 import sys
 
+from collections import deque
+
 def params():
     return (int(sys.argv[1]), int(sys.argv[2]))
 
 class Circle:
     def __init__(self):
-        self.circle = [0]
-        self.current_marble_idx = 0
+        # clockwise to the _left_, counterclockwise to the _right_
+        # rotating a positive number moves clockwise, rotating a
+        # negative number moves counterclockwise
+        # current marble is always the right side of the queue
+        self.circle = deque([0])
 
     def play(self, marble_num, player):
         if marble_num % 23 == 0:
             player.add_points(marble_num)
-            self.current_marble_idx = (self.current_marble_idx - 7) % len(self.circle)
-            player.add_points(self.circle.pop(self.current_marble_idx))
+            self.circle.rotate(-7)
+            player.add_points(self.circle.pop())
         else:
-            self.current_marble_idx = (self.current_marble_idx + 2) % len(self.circle)
-            self.circle.insert(self.current_marble_idx, marble_num)
+            self.circle.rotate(2)
+            self.circle.append(marble_num)
 
     def __repr__(self):
         rv = []
