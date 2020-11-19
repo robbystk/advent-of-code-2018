@@ -13,8 +13,12 @@ class Stars:
         self.position_list = np.array(position_list)
         self.velocity_list = np.array(velocity_list)
 
-    def advance(self):
+    def propagate(self):
         self.position_list += self.velocity_list
+
+    def back_propagate(self):
+        self.seconds -= 1
+        self.position_list -= self.velocity_list
 
     def bounding_box_size(self):
         return self.position_list.max(axis=0) - self.position_list.min(axis=0)
@@ -47,7 +51,16 @@ def main():
 
     starfield = Stars(position_list, velocity_list)
     
-    print(starfield.bounding_box_size())
+    current_bounding_box = starfield.bounding_box_size()
+    previous_bounding_box = current_bounding_box
+
+    while (previous_bounding_box >= current_bounding_box).any():
+        starfield.propagate()
+        previous_bounding_box = current_bounding_box
+        current_bounding_box = starfield.bounding_box_size()
+
+
+    starfield.back_propagate()
 
     print(starfield)
 
