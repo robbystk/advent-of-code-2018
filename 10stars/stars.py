@@ -10,10 +10,12 @@ def input():
 
 class Stars:
     def __init__(self, position_list, velocity_list):
+        self.seconds = 0
         self.position_list = np.array(position_list)
         self.velocity_list = np.array(velocity_list)
 
     def propagate(self):
+        self.seconds += 1
         self.position_list += self.velocity_list
 
     def back_propagate(self):
@@ -63,6 +65,7 @@ def main():
     starfield.back_propagate()
 
     print(starfield)
+    print(starfield.seconds)
 
 if __name__ == '__main__':
     main()
