@@ -1,12 +1,14 @@
 import sys
 
+import numpy as np
+
 def grid_serial_number():
     return int(sys.argv[1])
 
 class Grid:
     def __init__(self, serial_number):
-        self.power_map = {}
         self.serial_number = serial_number
+        self.power_map = Grid.populate_power_map(serial_number)
 
     def square_power_level(self, top_left_x, top_left_y, square_size=3):
         rv = 0
@@ -16,12 +18,8 @@ class Grid:
         return rv
 
     def power_level(self, x, y):
-        if (x, y) in self.power_map:
-            return self.power_map[(x, y)]
-        else:
-            level = Grid.cell_power(x, y, self.serial_number)
-            self.power_map[(x, y)] = level
-            return level
+        # fuel cells are indexed from 1, but the power map is indexed from zero
+        return self.power_map[x - 1, y - 1]
 
     def cell_power(x, y, serial_number):
         rack_id = x + 10
@@ -30,6 +28,16 @@ class Grid:
         power_level = (power_level // 100) % 10 # keep hundreds digit
         power_level -= 5
         return power_level
+
+    def populate_power_map(serial_number):
+        power_map = np.empty((300, 300), dtype=np.int8)
+        for x in range(300):
+            for y in range(300):
+                # fuel cells are indexed from 1,
+                # but the power map is indexed from zero
+                power_map[x,y] = Grid.cell_power(x + 1, y + 1, serial_number)
+
+        return power_map
 
     def show_region(self, top_left_x, top_left_y, square_size=3):
         region = []
