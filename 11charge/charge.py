@@ -8,10 +8,10 @@ class Grid:
         self.power_map = {}
         self.serial_number = serial_number
 
-    def square_power_level(self, top_left_x, top_left_y):
+    def square_power_level(self, top_left_x, top_left_y, square_size=3):
         rv = 0
-        for x in range(top_left_x, top_left_x + 3):
-            for y in range(top_left_y, top_left_y + 3):
+        for x in range(top_left_x, top_left_x + square_size):
+            for y in range(top_left_y, top_left_y + square_size):
                 rv += self.power_level(x, y)
         return rv
 
@@ -31,11 +31,11 @@ class Grid:
         power_level -= 5
         return power_level
 
-    def show_region(self, top_left_x, top_left_y):
+    def show_region(self, top_left_x, top_left_y, square_size=3):
         region = []
-        for y in range(top_left_y - 1, top_left_y + 4):
+        for y in range(top_left_y - 1, top_left_y + square_size + 1):
             region.append([])
-            for x in range(top_left_x - 1, top_left_x + 4):
+            for x in range(top_left_x - 1, top_left_x + square_size + 1):
                 power_level = self.power_level(x, y)
                 region[-1].append(f"{power_level: 3}")
 
