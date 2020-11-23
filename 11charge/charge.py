@@ -50,28 +50,26 @@ class Grid:
         return '\n'.join(['  '.join(row) for row in region])
 
     def find_max_power_square(self):
-        max_power = -45
-        max_coords = (None, None)
+        max_power = -5 * 300**2
+        max_params = (None, None, None)
 
-        for x in range(1, 300 - 3 + 1):
-            for y in range(1, 300 - 3 + 1):
-                power = self.square_power_level(x, y)
-                if power > max_power:
-                    max_power = power
-                    max_coords = (x, y)
+        for square_size in range(1, 300 + 1):
+            for x in range(1, 300 - square_size + 1):
+                for y in range(1, 300 - square_size + 1):
+                    power = self.square_power_level(x, y, square_size)
+                    if power > max_power:
+                        max_power = power
+                        max_coords = (x, y, square_size)
         return max_coords
 
 def main():
     grid = Grid(grid_serial_number())
 
-    max_x, max_y = grid.find_max_power_square()
+    max_x, max_y, square_size = grid.find_max_power_square()
 
-    print(f"max square at: ({max_x}, {max_y})")
+    print(f"max square is: ({max_x},{max_y},{square_size})")
 
-    print(grid.show_region(max_x, max_y))
-
-    print(grid.square_power_level(max_x, max_y))
-
+    print(grid.show_region(max_x, max_y, square_size))
 
 if __name__ == '__main__':
     main()
